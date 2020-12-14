@@ -1,0 +1,81 @@
+2019/08/07 by Shima
+/***
+https://umaroidblog.com/laravel-tutorial1
+https://qiita.com/kunit/items/ade739818ef86d8de716
+***/
+
+// default
+php --version
+/***
+PHP 5.6.40 (cli) (built: Mar  8 2019 18:17:39) 
+***/
+mysql --version
+/***
+mysql  Ver 14.14 Distrib 5.5.62, for Linux (x86_64) using readline 5.1
+***/
+
+// php update for 7.1
+sudo yum -y install php71 php71-cli php71-common php71-devel php71-mysqlnd php71-pdo php71-xml php71-gd php71-intl php71-mbstring php71-mcrypt php71-opcache php71-pecl-apcu php71-pecl-imagick php71-pecl-memcached php71-pecl-redis php71-pecl-xdebug
+sudo alternatives --set php /usr/bin/php-7.1
+php --version
+/***
+PHP 7.1.30 (cli) (built: Jun 12 2019 20:55:28) ( NTS )
+***/
+
+// mysql update for 5.7
+sudo service mysqld stop
+sudo yum -y erase mysql-config mysql55-server mysql55-libs mysql55
+sudo yum -y install mysql57-server mysql57
+sudo service mysqld start
+mysql --version
+/***
+mysql  Ver 14.14 Distrib 5.7.26, for Linux (x86_64) using  EditLine wrapper
+***/
+
+// setting for Japanese Language
+sudo vi /etc/my.cnf
+/***
+[mysqld]
+character-set-server=utf8
+[client]
+default-character-set=utf8
+***/
+sudo service mysqld restart
+sudo yum install php56-mbstring
+y
+
+// install compaser
+curl -sS https://getcomposer.org/installer | php
+// created composer.phar
+sudo mv composer.phar /usr/local/bin/composer
+composer
+/***
+   ______
+  / ____/___  ____ ___  ____  ____  ________  _____
+ / /   / __ \/ __ `__ \/ __ \/ __ \/ ___/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ (__  )  __/ /
+\____/\____/_/ /_/ /_/ .___/\____/____/\___/_/
+                    /_/
+Composer version 1.9.0 2019-08-02 20:55:32
+***/
+
+// cange Japanese Time Configuration
+date
+/***
+Wed Aug  7 03:30:22 UTC 2019
+***/
+# Linux の TimeZoneの変更　（9時間のずれを補正）
+date
+sudo vi /etc/sysconfig/clock
+/***
+  ZONE="Asia/Tokyo"
+  UTC=true
+***/
+sudo ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+sudo reboot
+date
+/***
+Wed Aug  7 12:33:08 JST 2019
+***/
+
+

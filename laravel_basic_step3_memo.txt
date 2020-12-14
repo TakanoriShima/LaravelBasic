@@ -1,0 +1,77 @@
+/***
+2019/08/07 by shima
+Seederの基本的な扱い
+https://laraweb.net/knowledge/2302/
+***?
+
+php artisan make:seed AccountsTableSeeder
+/***
+Seeder created successfully.
+***/
+
+// edit app/database/seeds/AccountsTableSeeder.php 
+// sample data create in use de facade
+<?php
+
+use Illuminate\Database\Seeder;
+
+class AccountsTableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        \DB::table('accounts')->insert([
+            [
+                'name'    => '川端 莉緒',
+                'email'   => 'kawabata_rio@example.com',
+                'password' => 'kawabatakawabata',
+                'remember_token' => 'kawabatakawabata',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+             ],
+            [
+                'name'    => '小玉 隆博',
+                'email' => 'kodama_takahiro@example.com',
+                'password' => 'kodamakodamakodama',
+                'remember_token' => 'kodamakodamakodama',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'name'    => '岩井 圭',
+                'email' => 'iwai_kei@example.com',
+                'password' => 'iwaiiwaiiwai',
+                'remember_token' => 'iwaiiwaiiwai',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ],
+        ]);
+    }
+}
+
+// edit DatabaseSeeder.php 
+<?php
+
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run(){
+        $this->call(AccountsTableSeeder::class);
+    }
+}
+
+// run and insert sample data
+php artisan db:seed
+
+
+

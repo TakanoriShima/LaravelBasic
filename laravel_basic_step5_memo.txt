@@ -1,0 +1,103 @@
+/***
+2019/08/07 by shima
+モデルの基礎
+***/
+cd ~/environment/
+composer create-project "laravel/laravel=5.2.*" test4
+cd test4
+php artisan serve --port=8080
+// edit config/app.php
+'timezone' => 'Asia/Tokyo',
+'locale' => 'ja',
+
+sudo service mysqld start
+sudo mysql
+mysql> create database sample4;
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sample3            |
+| test               |
++--------------------+
+7 rows in set (0.00 sec)
+mysql> exit;
+
+// create .env file and edit
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE = sample4
+DB_USERNAME = root
+DB_PASSWORD =
+
+
+# delete all php files in database/migrations 
+# create model
+php artisan make:model Models/Employee --migration
+/***
+Created Migration: 2019_08_07_165328_create_employees_table
+***/
+
+// edit create_employees_table.php
+<?php
+
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateEmployeesTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('employees', function (Blueprint $table) {
+    
+          // カラムを作成していく
+          $table->increments('id');
+          $table->string('name');
+          $table->string('email')->unique();
+          $table->string('password');
+          $table->rememberToken();
+          $table->timestamps();
+         });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('employees');
+    }
+}
+
+// migration
+php artisan migrate
+/***
+Migrated: 2014_10_12_000000_create_users_table
+Migrated: 2014_10_12_100000_create_password_resets_table
+Migrated: 2019_08_07_165328_create_employees_table
+***/
+
+// Eloquent :「エロクアント」
+// ブラックボックスリスト方式で Employeeモデルに許可を与える
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Employee extends Model
+{
+    //$fillable = ['name', 'email', 'password', 'remember_token', 'created_at', 'updated_at']; 
+    protected $guarded = [];
+}

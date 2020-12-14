@@ -1,0 +1,130 @@
+/***
+2019/08/07 by shima
+コントローラの基礎とルーティング
+ビューの作成とコントローラからビューへのデータ渡し
+https://qiita.com/mikaku/items/ca30d68f0f41e475c419
+https://laraweb.net/knowledge/3387/
+***/
+
+// step5から続き
+// Employeeモデルとテーブルは完成している
+
+// コントローラの作成
+php artisan make:controller EmployeeController
+/***
+Controller created successfully.
+***/
+
+// app/Http/Controllers/EmployeeController.php に indexアクションを追加
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Http\Requests;
+
+class EmployeeController extends Controller
+{
+    // indexアクションを定義
+    public function index() {
+        return "こんにちは！";
+    }
+}
+
+// ルーティングファイルを編集　
+// 以下のどちらか
+// routes/web.php
+// app/Http/routes.php
+<?php
+
+/*
+|--------------------------------------------------------------------------
+| Application Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register all of the routes for an application.
+| It's a breeze. Simply tell Laravel the URIs it should respond to
+| and give it the controller to call when that URI is requested.
+|
+*/
+
+/***
+Route::get('/', function () {
+    return view('welcome');
+});
+***/
+
+Route::get('/','EmployeeController@index');
+
+// start server
+php artisan serve --port=8080
+
+// ビューの作成
+// EmployeeController.php の変形
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Http\Requests;
+
+class EmployeeController extends Controller
+{
+    // indexアクションを定義
+    public function index() {
+        //return "こんにちは！";
+        return view('index');
+    }
+}
+
+// resources/views/index.blade.php を新規作成
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>Document</title>
+    </head>
+    <body>
+        <h1>Hello test</h1>
+    </body>
+</html>
+
+// コントローラによるダミーデータの作成
+// app/Models/Employee.php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Employee extends Model
+{
+    //
+    $fillable = ['name', 'email', 'password', 'remember_token']; 
+}
+
+// app/Http/COntrollers/EmployeeController@index を変更
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Http\Requests;
+use App\Models\Employee as Employee;
+
+class EmployeeController extends Controller
+{
+    // indexアクションを定義
+    public function index() {
+        //return "こんにちは！";
+        $employee = Employee::create(['name' => '山田太郎','email' => 'yamada@test.com', 'password' => 'hogehoge', 'remember_token' => 'hogehoge']);
+        //$employee = Employee::insert(['name'=>'山田太郎','email'=>'yamada@test.com', password'=>'hogehoge', 'remember_token'=>'hogehoge']);
+        //$employee = Employee::find(1);
+        return view('index')->with('employee', $employee);
+        #return view('index');
+    }
+}
+

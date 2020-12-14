@@ -1,0 +1,180 @@
+/***
+20190807 by shima
+組み込み認証用アプリの作成と、git/heroku
+https://laraweb.net/environment/3953/
+***/
+
+// create new app(name test)
+composer create-project "laravel/laravel=5.2.*" test
+cd test
+php artisan serve --port=8080
+/***
+Laravel development server started on http://localhost:8080/
+***/
+// preview running application
+
+// edit config/app.php
+'timezone' => 'Asia/Tokyo',
+'locale' => 'ja',
+
+sudo service mysqld start
+sudo mysql
+mysql> create database sample;
+mysql> show databases;
+/***
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sample             |
+| test               |
++--------------------+
+***/
+
+// create .env file and edit
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE = sample
+DB_USERNAME = root
+DB_PASSWORD =
+
+// migrate defalut database --> test/database/migration/***table
+php artisan migrate
+/***
+Migrated: 2014_10_12_000000_create_users_table
+Migrated: 2014_10_12_100000_create_password_resets_table
+***/
+
+// create login view automatically
+php artisan make:auth
+/***
+Created View: /home/ec2-user/environment/test/resources/views/auth/login.blade.php
+Created View: /home/ec2-user/environment/test/resources/views/auth/register.blade.php
+Created View: /home/ec2-user/environment/test/resources/views/auth/passwords/email.blade.php
+Created View: /home/ec2-user/environment/test/resources/views/auth/passwords/reset.blade.php
+Created View: /home/ec2-user/environment/test/resources/views/auth/emails/password.blade.php
+Created View: /home/ec2-user/environment/test/resources/views/layouts/app.blade.php
+Created View: /home/ec2-user/environment/test/resources/views/home.blade.php
+Created View: /home/ec2-user/environment/test/resources/views/welcome.blade.php
+Installed HomeController.
+Updated Routes File.
+Authentication scaffolding generated successfully!
+***/
+
+// edit .env file
+MAIL_DRIVER=log
+MAIL_HOST=mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+
+// start server
+php artisan serve --port=8080
+
+// resister & login app complete!
+
+// bitbucket
+cd ~/.ssh
+ssh-keygen -t rsa -C quark2galaxy@gmail.com
+cat id_rsa.pub
+/***
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDr6gl+0e9NuiIJz6JR4MZx6BA3niN17/LiffHRxHTAkmJ47h8n4kBRwp72Zyeg7HMKhJm8FOBMZgH4fckVEAs5gqCVDpn+HZUI2K2nMWlo0SAd4utHppyq2/zkQGo65y1vMgp3ULo7oTc/77tG3D4Sa33H+O2YlX3w5VR/Tq5DogvR02EVWFEccg++ffczjh66ahyVWZ9leBu4zdhBGLBKh/9uuk/Av2XxK9bQDR/Jg57xtY21Aad/MWtZWukefreU8XIJP7Gc1R7ALsBHHS0f7GVGqRuW3SnzVbnKacxi6n/xwqfsTHH21cztIfIQFuvZ46Wfgqrojb1sCGXub/sL quark2galaxy@gmail.com
+***/
+cat ~/.ssh/id_rsa.pub >> authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/id_rsa 
+cd ~/environment/test/
+
+git init
+git add -A
+git commit -m "first commit"
+git log
+
+
+git remote add origin https://quark2galaxy@bitbucket.org/quark2galaxy/laravel_firststep.git
+git remote -v
+/***
+origin  https://quark2galaxy@bitbucket.org/quark2galaxy/laravel_firststep.git (fetch)
+origin  https://quark2galaxy@bitbucket.org/quark2galaxy/laravel_firststep.git (push)
+***/
+git config --global user.name 'Takanori Shima'
+git config --global user.email 'quark2galaxy@gmail.com'
+git config --local core.quotepath false
+
+git push -f origin master
+
+// heroku
+curl -OL https://cli-assets.heroku.com/heroku-linux-x64.tar.gz
+tar zxf heroku-linux-x64.tar.gz && rm -f heroku-linux-x64.tar.gz
+sudo mv heroku /usr/local
+echo 'PATH=/usr/local/heroku/bin:$PATH' >> $HOME/.bash_profile
+source $HOME/.bash_profile > /dev/null
+
+heroku --version
+/***
+heroku/7.27.1 linux-x64 node-v11.14.0
+***/
+
+heroku login --interactive
+heroku create laravel-first-app
+vi Procfile
+/***
+web: vendor/bin/heroku-php-apache2 public/
+***/
+
+heroku git:remote -a laravel-first-app
+/***
+set git remote heroku to https://git.heroku.com/laravel-first-app.git
+***/
+git remote -v
+/***
+heroku  https://git.heroku.com/laravel-first-app.git (fetch)
+heroku  https://git.heroku.com/laravel-first-app.git (push)
+origin  https://quark2galaxy@bitbucket.org/quark2galaxy/laravel_firststep.git (fetch)
+origin  https://quark2galaxy@bitbucket.org/quark2galaxy/laravel_firststep.git (push)
+***/
+git add -A
+git commit -m "heroku deploy"
+git push heroku master
+
+heroku config:set APP_KEY=$(php artisan key:generate --show)
+/***
+https://note.mu/koushikagawa/n/n203ed82e95ff
+***/
+
+
+// resources > Add-ons > postgres
+
+heroku config:get DATABASE_URL
+/***
+postgres://dwwjzpiwptmssa:7211c77aa07a48a2fea29d2f84a5a1b1ed649486151faf17c904d6fc0830af09@ec2-54-243-208-234.compute-1.amazonaws.com:5432/df4dk64cfb1aru
+***/
+
+heroku config:set DB_CONNECTION=pgsql
+heroku config:set DB_HOST=ec2-54-243-208-234.compute-1.amazonaws.com
+heroku config:set DB_DATABASE=df4dk64cfb1aru
+heroku config:set DB_USERNAME=dwwjzpiwptmssa
+heroku config:set DB_PASSWORD=7211c77aa07a48a2fea29d2f84a5a1b1ed649486151faf17c904d6fc0830af09
+
+heroku run "php artisan migrate"
+/*** or 
+heroku run bash
+php artisan migrate
+***/
+yes
+
+/***
+Migration table created successfully.
+Migrated: 2014_10_12_000000_create_users_table
+Migrated: 2014_10_12_100000_create_password_resets_table
+***/
+
+// complete!
+see also
+https://laraweb.net/environment/4115/
+/*** mysql version ***/
+heroku addons:add cleardb
